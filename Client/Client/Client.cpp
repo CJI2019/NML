@@ -152,7 +152,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
-			gGameFramework.FrameAdvance();
+			gGameFramework.FrameUpdate();
 		}
 	}
 	gGameFramework.OnDestroy();

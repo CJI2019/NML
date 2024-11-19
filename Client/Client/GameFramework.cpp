@@ -48,9 +48,6 @@
 
 CGameFramework::~CGameFramework()
 {
-#ifndef SINGLE_PLAY
-	m_pClientNetwork->Exit();
-#endif // SINGLE_PLAY
 }
 
 bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
@@ -72,50 +69,16 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	
 	SoundManager& soundManager = SoundManager::GetInstance();
 	soundManager.Initialize();
-
-	//m_pTcpClient = make_shared<CTcpClient>(hMainWnd);
-
-	//g_collisionManager.CreateCollision(SPACE_FLOOR, SPACE_WIDTH, SPACE_DEPTH);
 	BuildObjects();
-	//[0514] PrepaerDrawText-> 창모드 전환에 문제있음
-	//PrepareDrawText();// Scene이 초기화 되고 나서 수행해야함 SRV를 Scene이 가지고 있음.
 
 	return(true);
 }
-//#define _WITH_CREATE_SWAPCHAIN_FOR_HWND
 
 void CGameFramework::CreateSwapChain()
 {
 	RECT rcClient;
 	::GetClientRect(m_hWnd, &rcClient);
-	//m_nWndClientWidth = rcClient.right - rcClient.left;
-	//m_nWndClientHeight = rcClient.bottom - rcClient.top;
 
-#ifdef _WITH_CREATE_SWAPCHAIN_FOR_HWND
-	DXGI_SWAP_CHAIN_DESC1 dxgiSwapChainDesc;
-	::ZeroMemory(&dxgiSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC1));
-	dxgiSwapChainDesc.Width = m_nWndClientWidth;
-	dxgiSwapChainDesc.Height = m_nWndClientHeight;
-	dxgiSwapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	dxgiSwapChainDesc.SampleDesc.Count = (m_bMsaa4xEnable) ? 4 : 1;
-	dxgiSwapChainDesc.SampleDesc.Quality = (m_bMsaa4xEnable) ? (m_nMsaa4xQualityLevels - 1) : 0;
-	dxgiSwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	dxgiSwapChainDesc.BufferCount = m_nSwapChainBuffers;
-	dxgiSwapChainDesc.Scaling = DXGI_SCALING_NONE;
-	dxgiSwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	dxgiSwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	dxgiSwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC dxgiSwapChainFullScreenDesc;
-	::ZeroMemory(&dxgiSwapChainFullScreenDesc, sizeof(DXGI_SWAP_CHAIN_FULLSCREEN_DESC));
-	dxgiSwapChainFullScreenDesc.RefreshRate.Numerator = 60;
-	dxgiSwapChainFullScreenDesc.RefreshRate.Denominator = 1;
-	dxgiSwapChainFullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	dxgiSwapChainFullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	dxgiSwapChainFullScreenDesc.Windowed = TRUE;
-
-	HRESULT hResult = m_dxgiFactory->CreateSwapChainForHwnd(m_d3dCommandQueue.Get(), m_hWnd, &dxgiSwapChainDesc, &dxgiSwapChainFullScreenDesc, NULL, (IDXGISwapChain1**)m_dxgiSwapChain.GetAddressOf());
-#else
 	DXGI_SWAP_CHAIN_DESC dxgiSwapChainDesc;
 	::ZeroMemory(&dxgiSwapChainDesc, sizeof(dxgiSwapChainDesc));
 	dxgiSwapChainDesc.BufferCount = m_nSwapChainBuffers;
@@ -133,7 +96,7 @@ void CGameFramework::CreateSwapChain()
 	dxgiSwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	HRESULT hResult = m_dxgiFactory->CreateSwapChain(m_d3dCommandQueue.Get(), &dxgiSwapChainDesc, (IDXGISwapChain**)m_dxgiSwapChain.GetAddressOf());
-#endif
+
 	m_nSwapChainBufferIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
 	hResult = m_dxgiFactory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER);
@@ -207,11 +170,8 @@ void CGameFramework::CreateCommandQueueAndList()
 	d3dCommandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	hResult = m_d3d12Device->CreateCommandQueue(&d3dCommandQueueDesc, _uuidof(ID3D12CommandQueue), (void**)m_d3dCommandQueue.GetAddressOf());
 
-	//hResult = m_d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), (void**)m_d3dCommandAllocator.GetAddressOf());
-
 	for (int i = 0;i < m_nSwapChainBuffers;++i) {
 		hResult = m_d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), (void**)m_d3dCommandAllocator[i].GetAddressOf());
-		//ThrowIfFailed(m_d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_d3dCommandAllocator[i])));
 	}
 	hResult = m_d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,m_d3dCommandAllocator[m_nSwapChainBufferIndex].Get(), NULL, __uuidof(ID3D12GraphicsCommandList), (void**)m_d3dCommandList.GetAddressOf());
 	hResult = m_d3dCommandList->Close();
@@ -246,7 +206,6 @@ void CGameFramework::CreateRenderTargetViews()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_d3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 
-	// 클리어 색상 값 설정
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // 검정색 (완전 불투명)
 	for (UINT i = 0; i < m_nSwapChainBuffers; i++)
 	{
@@ -407,9 +366,6 @@ void CGameFramework::PrepareDrawText()
 		dpiY
 	);
 
-	//[CJI 0412] 텍스트를 렌더타겟에 그리고 이를 텍스처로 바꾼이후 다른 사물에 매핑하려고 했으나 실패(시간너무 끌어서 패스).. 나중에 한번 해보자. 
-	//m_pTextobject = make_unique<TextObject>(m_d3d12Device.Get(), m_d3dCommandList.Get(), m_d3dSwapChainBackBuffers);
-
 	for (UINT n = 0; n < m_nSwapChainBuffers; n++)
 	{
 		D3D11_RESOURCE_FLAGS d3d11Flags = { D3D11_BIND_RENDER_TARGET };
@@ -481,8 +437,6 @@ void CGameFramework::PrepareDrawText()
 	m_bPrepareDrawText = true;
 }
 
-//float uiX{}, uiY{};
-
 void CGameFramework::RenderTextUI()
 {
 	if (m_nGameState != GAME_STATE::IN_GAME)
@@ -492,7 +446,7 @@ void CGameFramework::RenderTextUI()
 
 	D2D1_SIZE_F rtSize = m_d2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	// 현재 백 버퍼에 대한 래핑된 렌더 타겟 자원을 획득합니다.
+	// 현재 백 버퍼에 대한 래핑된 렌더 타겟 자원을 획득
 	m_d3d11On12Device->AcquireWrappedResources(m_wrappedBackBuffers[m_nSwapChainBufferIndex].GetAddressOf(), 1);
 	m_d2dDeviceContext->SetTarget(m_d2dRenderTargets[m_nSwapChainBufferIndex].Get());
 	m_d2dDeviceContext->BeginDraw();
@@ -500,9 +454,9 @@ void CGameFramework::RenderTextUI()
 	m_pMainPlayer->RenderTextUI(m_d2dDeviceContext, m_textFormat, m_textBrush);
 
 	ThrowIfFailed(m_d2dDeviceContext->EndDraw());
-	// 래핑된 렌더 타겟 자원을 해제합니다. 해제하면 래핑된 자원이 생성될 때 지정된 OutState로 백 버퍼 자원이 전환됩니다
+	// 래핑된 렌더 타겟 자원을 해제합니다. 해제하면 래핑된 자원이 생성될 때 지정된 OutState로 백 버퍼 자원이 전환
 	m_d3d11On12Device->ReleaseWrappedResources(m_wrappedBackBuffers[m_nSwapChainBufferIndex].GetAddressOf(), 1);
-	//명령 목록을 공유 명령 큐에 제출하기 위해 플러시합니다.
+	//명령 목록을 공유 명령 큐에 제출하기 위해
 	m_d3d11DeviceContext->Flush();
 }
 
@@ -510,7 +464,6 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 {
 	if (!m_bConnected)	// 서버와 연결 X
 	{
-
 		return;
 	}
 
@@ -1029,8 +982,6 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-	//if (m_pScene) m_pScene->ReleaseObjects();
-	//if (m_pScene) delete m_pScene;
 }
 
 void CGameFramework::ProcessInput()
@@ -1048,7 +999,6 @@ void CGameFramework::ProcessInput()
 		return;
 	}
 
-	//if ( && m_pScene) bProcessedByScene = m_pScene->ProcessInput(m_pKeysBuffer);
 	PostMessage(m_hWnd, WM_SOCKET, (WPARAM)m_pTcpClient->m_sock, MAKELPARAM(FD_WRITE, 0));
 
 	if (!bProcessedByScene)
@@ -1091,25 +1041,6 @@ void CGameFramework::AnimateObjects()
 	float fElapsedTime = gGameTimer.GetTimeElapsed();
 
 	if (m_pScene) m_pScene->AnimateObjects(fElapsedTime, gGameTimer.GetTotalTime());
-
-	//vector<shared_ptr<CLightCamera>>& lightCamera = m_pScene->GetLightCamera();
-
-	//XMFLOAT3 clientCameraPos = m_pCamera.lock().get()->GetPosition();
-	//sort(lightCamera.begin() + 4, lightCamera.end(), [clientCameraPos](const shared_ptr<CLightCamera>& A, const shared_ptr<CLightCamera>& B) {
-	//	//const float epsilon = 1e-5f; // 허용 오차
-	//	XMFLOAT3 clToA = Vector3::Subtract(clientCameraPos, A->GetPosition());
-	//	XMFLOAT3 clToB = Vector3::Subtract(clientCameraPos, B->GetPosition());
-	//	return Vector3::Length(clToA) < Vector3::Length(clToB);
-	//	});
-
-	//for (auto& cm : lightCamera) {
-	//	cm->Update(cm->GetLookAtPosition(), fElapsedTime);
-	//	if (auto player = cm->GetPlayer().lock()) {
-	//		if (player->GetClientId() == -1) {
-	//			cm->m_pLight->m_bEnable = false;
-	//		}
-	//	}
-	//}
 }
 
 void CGameFramework::AnimateEnding()
@@ -1160,7 +1091,6 @@ void CGameFramework::PreRenderTasks(shared_ptr<CMainScene>& pMainScene)
 	if (nClientId != -1)
 	{
 		SetPlayerObjectOfClient(nClientId);
-		//m_bPrevRender = true;
 	}
 	else	// 에러임
 	{
@@ -1177,16 +1107,12 @@ void CGameFramework::PreRenderTasks(shared_ptr<CMainScene>& pMainScene)
 	// 이곳에서 렌더링 하기전에 준비작업을 시행하도록한다. ex) 쉐도우맵 베이킹
 	// buildobject함수 호출 이후 처리되어야할 작업이다. -> 모든 객체들이 렌더링되어야 그림자맵을 생성함.
 
-	//HRESULT hResult = m_d3dCommandAllocator->Reset();
 	HRESULT hResult = m_d3dCommandAllocator[m_nSwapChainBufferIndex]->Reset();
 	hResult = m_d3dCommandList->Reset(m_d3dCommandAllocator[m_nSwapChainBufferIndex].Get(), NULL);
 
 	SynchronizeResourceTransition(m_d3dCommandList.Get(), m_d3dSwapChainBackBuffers[m_nSwapChainBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_d3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * ::gnRtvDescriptorIncrementSize);
-
-	/*FLOAT ClearValue[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	m_d3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, ClearValue, 0, NULL);*/
 
 	pMainScene->PrevRenderTask(m_d3dCommandList.Get());
 
@@ -1234,16 +1160,9 @@ void CGameFramework::LoadingRender()
 	m_dxgiSwapChain->Present(0, 0);
 
 	MoveToNextFrame();
-
-	/*gGameTimer.GetFrameRate(m_pszFrameRate + 15, 37);
-	size_t nLength = _tcslen(m_pszFrameRate);
-	XMFLOAT3 xmf3Position = xmf3Position = m_pMainPlayer->GetPosition();
-	_stprintf_s(m_pszFrameRate + nLength, 200 - nLength, _T("ID:%d %d, NumOfClient: %d, (%4f, %4f, %4f), %d"), m_pTcpClient->GetMainClientId(), m_nMainClientId, m_pTcpClient->GetNumOfClient(), xmf3Position.x, xmf3Position.y, xmf3Position.z, g_collisionManager.GetNumOfCollisionObject());
-	::SetWindowText(m_hWnd, m_pszFrameRate);*/
 }
 
-//#define _WITH_PLAYER_TOP
-void CGameFramework::FrameAdvance()
+void CGameFramework::FrameUpdate()
 {
 	gGameTimer.Tick(60.0f);
 
@@ -1281,7 +1200,6 @@ void CGameFramework::FrameAdvance()
 	HRESULT hResult = m_d3dCommandAllocator[m_nSwapChainBufferIndex]->Reset();
 	hResult = m_d3dCommandList->Reset(m_d3dCommandAllocator[m_nSwapChainBufferIndex].Get(), NULL);
 
-	// 렌더링
 	switch (m_nGameState)
 	{
 	case GAME_STATE::IN_LOBBY:
@@ -1319,18 +1237,15 @@ void CGameFramework::FrameAdvance()
 		}
 
 		SynchronizeResourceTransition(m_d3dCommandList.Get(), m_d3dSwapChainBackBuffers[m_nSwapChainBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_d3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 		d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * ::gnRtvDescriptorIncrementSize);
-
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dDsvCPUDescriptorHandle = pMainScene->m_pPostProcessingShader->GetDsvCPUDesctriptorHandle(0);
 		m_d3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
-		pMainScene->m_pPostProcessingShader->OnPrepareRenderTarget(m_d3dCommandList.Get(), 0, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], &d3dDsvCPUDescriptorHandle);
 
+		pMainScene->m_pPostProcessingShader->OnPrepareRenderTarget(m_d3dCommandList.Get(), 0, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], &d3dDsvCPUDescriptorHandle);
 		pMainScene->PrepareRender(m_d3dCommandList.Get(), m_pCamera.lock());
 		UpdateFrameworkShaderVariable();
 		pMainScene->FinalRender(m_d3dCommandList.Get(), m_pCamera.lock(), d3dRtvCPUDescriptorHandle, m_nGameState);
-
 		pMainScene->BlurDispatch(m_d3dCommandList.Get(), m_pCamera.lock(), d3dRtvCPUDescriptorHandle);
 		pMainScene->ForwardRender(m_nGameState, m_d3dCommandList.Get(), m_pCamera.lock());
 		pMainScene->FullScreenProcessingRender(m_d3dCommandList.Get());
@@ -1359,11 +1274,11 @@ void CGameFramework::FrameAdvance()
 
 	MoveToNextFrame();
 
-	gGameTimer.GetFrameRate(m_pszFrameRate + 15, 37);
+	/*gGameTimer.GetFrameRate(m_pszFrameRate + 15, 37);
 	size_t nLength = _tcslen(m_pszFrameRate);
 	XMFLOAT3 xmf3Position = xmf3Position = m_pMainPlayer->GetPosition();
 	_stprintf_s(m_pszFrameRate + nLength, 200 - nLength, _T("ID:%d %d, NumOfClient: %d, (%4f, %4f, %4f), %d"), m_pTcpClient->GetMainClientId(), m_nMainClientId, m_pTcpClient->GetNumOfClient(), xmf3Position.x, xmf3Position.y, xmf3Position.z, g_collisionManager.GetNumOfCollisionObject());
-	::SetWindowText(m_hWnd, m_pszFrameRate);
+	::SetWindowText(m_hWnd, m_pszFrameRate);*/
 }
 
 void CGameFramework::UpdateFrameworkShaderVariable()

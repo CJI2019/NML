@@ -310,119 +310,12 @@ void CPlayer::Animate(float fElapsedTime)
 
 void CPlayer::AnimateOOBB()
 {
-	//for (auto oobbOrigin : m_voobbOrigin)
-	//{
-	//	BoundingOrientedBox newOOBB;
-	//	XMMATRIX mtx = XMLoadFloat4x4(&m_xmf4x4World);
-	//	oobbOrigin.Transform(newOOBB, mtx);
-	//}
+
 }
 
 void CPlayer::Collide(float fElapsedTime, const shared_ptr<CGameObject>& pCollidedObject)
 {
-	//XMFLOAT3 xmf3Velocity;
-	//XMFLOAT3 xmf3NormalOfVelocity = Vector3::Normalize(m_xmf3Velocity);
 
-	//XMFLOAT3 xmf3OldPosition = m_xmf3OldPosition;
-	//m_bCollision = false;
-
-	//BoundingBox aabbPlayer;
-
-	//XMFLOAT3 xmf3SubVelocity[3];
-	//xmf3SubVelocity[0] = XMFLOAT3(xmf3NormalOfVelocity.x, 0.0f, xmf3NormalOfVelocity.z);
-	//xmf3SubVelocity[1] = XMFLOAT3(xmf3NormalOfVelocity.x, 0.0f, 0.0f);
-	//xmf3SubVelocity[2] = XMFLOAT3(0.0f, 0.0f, xmf3NormalOfVelocity.z);
-
-	//xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);
-	//float fLength = sqrtf(xmf3Velocity.x * xmf3Velocity.x + xmf3Velocity.z * xmf3Velocity.z);
-	//float fMaxVelocityXZ = m_fMaxVelocityXZ;
-	//if (fLength > m_fMaxVelocityXZ)
-	//{
-	//	xmf3Velocity.x *= (fMaxVelocityXZ / fLength);
-	//	xmf3Velocity.z *= (fMaxVelocityXZ / fLength);
-	//}
-	//float fMaxVelocityY = m_fMaxVelocityY;
-	//fLength = sqrtf(xmf3Velocity.y * xmf3Velocity.y);
-	//if (fLength > m_fMaxVelocityY) xmf3Velocity.y *= (fMaxVelocityY / fLength);
-
-	//XMFLOAT3 xmf3ResultVelocity = Vector3::ScalarProduct(xmf3Velocity, fElapsedTime, false);
-
-	//for (int k = 0; k < 3; ++k)
-	//{
-	//	m_xmf3Position = xmf3OldPosition;
-	//	CalculateSpace();
-
-	//	m_bCollision = false;
-	//	xmf3SubVelocity[k] = Vector3::ScalarProduct(xmf3SubVelocity[k], Vector3::Length(xmf3ResultVelocity), false);
-	//	Move(xmf3SubVelocity[k], false);
-	//	m_pCamera->Move(Vector3::ScalarProduct(xmf3SubVelocity[k], -1.0f, false));
-
-	//	OnUpdateToParent();
-	//	aabbPlayer.Center = m_voobbOrigin[0].Center;
-	//	aabbPlayer.Extents = m_voobbOrigin[0].Extents;
-	//	XMVECTOR xmvTranslation = XMVectorSet(m_xmf3Position.x, m_xmf3Position.y, m_xmf3Position.z, 1.0f);
-	//	aabbPlayer.Transform(aabbPlayer, 1.0f, XMQuaternionIdentity(), xmvTranslation);
-
-	//	for (int i = m_nWidth - 1; i <= m_nWidth + 1 && !m_bCollision; ++i)
-	//	{
-	//		for (int j = m_nDepth - 1; j <= m_nDepth + 1 && !m_bCollision; ++j)
-	//		{
-	//			if (i < 0 || i >= g_collisionManager.GetWidth() || j < 0 || j >= g_collisionManager.GetDepth())
-	//			{
-	//				continue;
-	//			}
-
-	//			for (const auto& object : g_collisonManager.GetSpaceGameObjects(m_nFloor, i, j))
-	//			{
-	//				shared_ptr<CGameObject> pGameObject = object.lock();
-	//				if (!pGameObject || pGameObject->GetCollisionType() == 2)	//임시로 2면 넘김
-	//				{
-	//					continue;
-	//				}
-
-	//				for (const auto& oobbOrigin : pGameObject->GetVectorOOBB())
-	//				{
-	//					BoundingOrientedBox oobb;
-	//					oobbOrigin.Transform(oobb, XMLoadFloat4x4(&pGameObject->m_xmf4x4World));
-	//					XMStoreFloat4(&oobb.Orientation, XMQuaternionNormalize(XMLoadFloat4(&oobb.Orientation)));
-
-	//					if (oobb.Intersects(aabbPlayer))
-	//					{ 
-	//						m_bCollision = true;
-	//						break;
-	//					}
-	//				}
-
-	//				if (m_bCollision)
-	//				{
-	//					break;
-	//				}
-	//			}
-	//		}
-	//	}
-	//	if (!m_bCollision)
-	//	{
-	//		if(!Vector3::IsZero(xmf3SubVelocity[k]))
-	//		{
-	//			m_xmf3OldVelocity = xmf3SubVelocity[k];
-	//		}
-	//		break;
-	//	}
-	//}
-	//
-	//if (m_bCollision)
-	//{
-	//	m_xmf3Position = m_xmf3OldPosition = xmf3OldPosition;
-	//	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//	CalculateSpace();
-	//}
-
-	//DWORD nCurrentCameraMode = m_pCamera->GetMode();
-	//m_pCamera->Update(m_xmf3Position, fElapsedTime);
-	//if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fElapsedTime);
-	//m_pCamera->RegenerateViewMatrix();
-	//
-	//OnUpdateToParent();
 }
 
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList)
@@ -519,18 +412,6 @@ void CBlueSuitPlayer::LoadModelAndAnimation(ID3D12Device* pd3dDevice, ID3D12Grap
 
 	m_pSkinnedAnimationController = make_shared<CBlueSuitAnimationController>(pd3dDevice, pd3dCommandList, 6, pLoadModelInfo);
 
-	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-	//#ifdef _WITH_SOUND_RESOURCE
-	//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-	//#else
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.1f, _T("Asset/Sound/Footstep01.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.9f, _T("Asset/Sound/Footstep02.wav"));
-	//#endif
-	//	CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
-	//	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 }
 
@@ -553,22 +434,6 @@ void CBlueSuitPlayer::Rotate(float x, float y, float z)
 {
 	CPlayer::Rotate(x, y, z);
 }
-
-//void CBlueSuitPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
-//{
-//	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-//
-//	if ((dwDirection & LSHIFT) && m_bAbleRun) 
-//	{
-//		m_bShiftRun = true;
-//	}
-//	else
-//	{
-//		m_bShiftRun = false;
-//	}
-//
-//	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
-//}
 
 void CBlueSuitPlayer::Update(float fElapsedTime)
 {
@@ -1362,19 +1227,6 @@ void CZombiePlayer::LoadModelAndAnimation(ID3D12Device* pd3dDevice, ID3D12Graphi
 
 	m_pBodyObject= FindFrame("Body");
 	m_pEyesObject = FindFrame("Eyes");
-
-//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-//#ifdef _WITH_SOUND_RESOURCE
-//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-//#else
-//
-//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.1f, (void*)_T("Sound/Footstep01.wav"));
-//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.9f, (void*)_T("Sound/Footstep02.wav"));
-//#endif
-//	shared_ptr<CAnimationCallbackHandler> pAnimationCallbackHandler = make_shared<CSoundCallbackHandler>();
-//	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 }

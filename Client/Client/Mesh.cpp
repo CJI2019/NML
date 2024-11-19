@@ -1092,29 +1092,6 @@ void CSkinnedMesh::LoadSkinInfoFromFile(ID3D12Device* pd3dDevice, ID3D12Graphics
 		}
 		else if (!strcmp(pstrToken, "<BoneWeights>:")) // 테스트 파일이 이런식으로 불러오도록 저장됨.
 		{
-			//m_nType |= VERTEXT_BONE_INDEX_WEIGHT;
-
-			//nReads = (UINT)::fread(&m_nVertices, sizeof(int), 1, pInFile);
-			//if (m_nVertices > 0)
-			//{
-			//	m_pxmn4BoneIndices = new XMINT4[m_nVertices];
-			//	m_pxmf4BoneWeights = new XMFLOAT4[m_nVertices];
-
-			//	nReads = (UINT)::fread(m_pxmn4BoneIndices, sizeof(XMINT4), m_nVertices, pInFile);
-			//	m_pd3dBoneIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmn4BoneIndices, sizeof(XMINT4) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dBoneIndexUploadBuffer);
-
-			//	m_d3dBoneIndexBufferView.BufferLocation = m_pd3dBoneIndexBuffer->GetGPUVirtualAddress();
-			//	m_d3dBoneIndexBufferView.StrideInBytes = sizeof(XMINT4);
-			//	m_d3dBoneIndexBufferView.SizeInBytes = sizeof(XMINT4) * m_nVertices;
-
-			//	nReads = (UINT)::fread(m_pxmf4BoneWeights, sizeof(XMFLOAT4), m_nVertices, pInFile);
-			//	m_pd3dBoneWeightBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf4BoneWeights, sizeof(XMFLOAT4) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dBoneWeightUploadBuffer);
-
-			//	m_d3dBoneWeightBufferView.BufferLocation = m_pd3dBoneWeightBuffer->GetGPUVirtualAddress();
-			//	m_d3dBoneWeightBufferView.StrideInBytes = sizeof(XMFLOAT4);
-			//	m_d3dBoneWeightBufferView.SizeInBytes = sizeof(XMFLOAT4) * m_nVertices;
-			//}
-
 			m_nType |= VERTEXT_BONE_INDEX_WEIGHT;
 
 			m_nVertices = ::ReadIntegerFromFile(pInFile);

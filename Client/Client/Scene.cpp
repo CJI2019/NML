@@ -330,10 +330,6 @@ void CScene::CreateCbvSrvUavDescriptorHeaps(ID3D12Device* pd3dDevice, int nConst
 	d3dDescriptorHeapDesc.NodeMask = 0;
 	HRESULT h  = pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_pd3dCbvSrvUavDescriptorHeap);
 
-	//m_d3dCbvCPUDescriptorNextHandle = m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	//m_d3dCbvGPUDescriptorNextHandle = m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	//m_d3dSrvCPUDescriptorNextHandle.ptr = m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * nConstantBufferViews);
-	//m_d3dSrvGPUDescriptorNextHandle.ptr = m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nConstantBufferViews);
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * nConstantBufferViews);
@@ -407,7 +403,6 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateShaderResourceView(ID3D12Device* pd3dD
 	return(d3dSrvGPUDescriptorHandle);
 }
 
-// 일단은 어차피 Uav하나만 있으면 되니 그대로 사용해보자
 void CScene::CreateUnorderedAccessViews(ID3D12Device* pd3dDevice, const shared_ptr<CTexture>& pTexture, UINT nDescriptorHeapIndex, UINT nRootParameterStartIndex)
 {
 	m_nCntUav++;
@@ -699,14 +694,12 @@ void CLobbyScene::PrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, cons
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
-	//UpdateShaderVariables(pd3dCommandList);
 }
 
 void CLobbyScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, const shared_ptr<CCamera>& pCamera, int nPipelineState)
 {
 	PrepareRender(pd3dCommandList, pCamera);
 
-	//m_vpShader[LOBBY_UI_SHADER]->Render(pd3dCommandList, pCamera, m_pMainPlayer, 0);
 	for (auto& pShader : m_vpShader)
 	{
 		pShader->Render(pd3dCommandList, pCamera, m_pMainPlayer, 0);
@@ -891,8 +884,6 @@ void CMainScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		}
 	}
 	
-	/*auto surviveMainPlayer = dynamic_pointer_cast<CBlueSuitPlayer>(m_apPlayer[mainPlayerId]);
-	auto zombieMainPlayer = dynamic_pointer_cast<CZombiePlayer>(m_apPlayer[mainPlayerId]);*/
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////// 아이템
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1298,12 +1289,10 @@ void CMainScene::LoadScene(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 						//pLoadedModel->m_pModelRootObject->SetTransparentObjectInfo(transparentObjects[pLoadedModel->m_pModelRootObject->m_pstrFrameName]);
 						//PtShader->AddPartitionGameObject((pLoadedModel->m_pModelRootObject), nPartition);
 						// 첫번째 쉐이더는 불투명한 재질들만 렌더링, 두번째 쉐이더는 투명한 재질들만 렌더링 분류를 위함이고 마지막에 렌더링해야하기 떄문에 두 쉐이더에 모두 포함한다. 
-
 					}
 					else
 					{
 						//PtShader->AddPartitionGameObject((pLoadedModel->m_pModelRootObject), nPartition);
-
 					}
 				}
 				else if (!strcmp(pstrToken, "<Animation>:"))
@@ -1768,8 +1757,6 @@ void CMainScene::PrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, const
 
 void CMainScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, const shared_ptr<CCamera>& pCamera, int nPipelineState)
 {
-	//PrepareRender(pd3dCommandList, pCamera);
-
 	for (auto& shader : m_vShader)
 	{
 		shader->Render(pd3dCommandList, pCamera, m_pMainPlayer, nPipelineState);

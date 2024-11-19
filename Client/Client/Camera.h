@@ -186,14 +186,7 @@ public:
 	CLightCamera();
 	virtual ~CLightCamera() { }
 
-	//bool operator<(const CLightCamera& A) {
-	//	const float epsilon = 1e-5f; // 허용 오차
-	//	//XMFLOAT3 clToA = Vector3::Subtract(clientCamera->GetPosition(), A->GetPosition());
-	//	//XMFLOAT3 clToB = Vector3::Subtract(clientCamera->GetPosition(), B->GetPosition());
-	//	//return Vector3::Length(clToA) - Vector3::Length(clToB) < epsilon;
-	//}
 	shared_ptr<LIGHT> m_pLight;
-	//shared_ptr<CCamera> m_pPlayerCamera;
 };
 
 

@@ -13,16 +13,6 @@ CShader::CShader()
 CShader::~CShader()
 {
 	ReleaseShaderVariables();
-
-	//if (m_ppd3dPipelineState) 
-	//{
-	//	for (int i = 0; i < m_nPipelineState;++i) 
-	//	{
-	//		if (m_ppd3dPipelineState[i]) {
-	//			m_ppd3dPipelineState[i]->Release();
-	//		}
-	//	}
-	//}
 }
 
 D3D12_SHADER_BYTECODE CShader::CreateVertexShader()
@@ -421,19 +411,6 @@ void InstanceStandardShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, 
 	}
 }
 
-//void InstanceStandardShader::FloorRender(ID3D12GraphicsCommandList* pd3dCommandList, const shared_ptr<CCamera>& pCamera, const shared_ptr<CPlayer>& pPlayer, int nPipelineState)
-//{
-//	UpdatePipeLineState(pd3dCommandList, nPipelineState);
-//	auto& pos = pPlayer->GetPosition();
-//	int curFloor = static_cast<int>(std::floor(pos.y / 4.5));
-//	
-//	for (int i = curFloor; i < curFloor + 2;++i) {
-//		if (i > 3) break;
-//		for (const auto& object : m_vFloorObjects[i]) {
-//			object->Render(pd3dCommandList);
-//		}
-//	}
-//}
 
 void InstanceStandardShader::AnimateObjects(float fElapsedTime)
 {
@@ -629,14 +606,6 @@ D3D12_RASTERIZER_DESC CPostProcessingShader::CreateRasterizerState()
 {
 	return(CShader::CreateRasterizerState());
 
-	//if (m_PipeLineIndex == 0) {
-	//	return(CShader::CreateRasterizerState());
-	//}
-	//else if (m_PipeLineIndex == 1) {
-	//	D3D12_RASTERIZER_DESC resState = CShader::CreateRasterizerState();
-	//	resState.CullMode = D3D12_CULL_MODE_FRONT;
-	//	return resState;
-	//}
 }
 
 void CPostProcessingShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, UINT nRenderTargets, DXGI_FORMAT* pdxgiRtvFormats, DXGI_FORMAT dxgiDsvFormat)
@@ -950,65 +919,6 @@ void CPostProcessingShader::CreateShadowMapResource(ID3D12Device* pd3dDevice, ID
 		d3dRtvCPUDescriptorHandle.ptr += ::gnRtvDescriptorIncrementSize;*/
 	}
 }
-
-void CPostProcessingShader::CreateLightCamera(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,CMainScene* scene)
-{
-	//vector<XMFLOAT3> positions = scene->GetLightPositions();
-	//vector<XMFLOAT3> looks = scene->GetLightLooks();
-
-	//XMFLOAT3 xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
-
-	//XMFLOAT4X4 xmf4x4ToTexture = {
-	//	0.5f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, -0.5f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	0.5f, 0.5f, 0.0f, 1.0f };
-
-	//XMMATRIX xmProjectionToTexture = XMLoadFloat4x4(&xmf4x4ToTexture);
-	//XMMATRIX xmmtxViewProjection;
-
-	//for (int i = 0;i < scene->m_nLights;++i) {
-	//	m_pLightCamera.push_back(make_shared<CCamera>());
-
-	//	XMFLOAT3 xmf3Up = Vector3::CrossProduct(looks[i], xmf3Right);
-	//	XMFLOAT3 lookAtPosition = Vector3::Add(positions[i], looks[i]);
-	//	m_pLightCamera[i]->GenerateViewMatrix(positions[i], lookAtPosition, xmf3Up);
-	//	if(i >= MAX_SURVIVOR)
-	//	{
-	//		m_pLightCamera[i]->GenerateProjectionMatrix(1.01f, 5.0f, ASPECT_RATIO, 90.0f);	//[0513] 근평면이 있어야  그림자를 그림
-	//	}
-	//	m_pLightCamera[i]->GenerateFrustum();
-	//	m_pLightCamera[i]->MultiplyViewProjection();
-
-	//	XMFLOAT4X4 viewProjection = m_pLightCamera[i]->GetViewProjection();
-	//	xmmtxViewProjection = XMLoadFloat4x4(&viewProjection);
-	//	XMStoreFloat4x4(&scene->m_pLights[i].m_xmf4x4ViewProjection, XMMatrixTranspose(xmmtxViewProjection * xmProjectionToTexture));
-
-	//	m_pLightCamera[i]->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	//}
-
-	//// 빛의 카메라 파티션 설정
-	//unique_ptr<PartitionInsStandardShader> PtShader(static_cast<PartitionInsStandardShader*>(scene->m_vPreRenderShader[PARTITION_SHADER].release()));
-	//auto vBB = PtShader->GetPartitionBB();
-
-	//for (int i = 0; i < scene->m_nLights;++i) {
-	//	BoundingBox camerabb;
-	//	camerabb.Center = m_pLightCamera[i]->GetPosition();
-	//	camerabb.Extents = XMFLOAT3(0.1f, 0.1f, 0.1f);
-	//	int curFloor = static_cast<int>(std::floor(camerabb.Center.y / 4.5f));
-
-	//	m_pLightCamera[i]->SetFloor(curFloor);
-	//	for (int bbIdx = 0; bbIdx < vBB.size();++bbIdx) {
-	//		if (vBB[bbIdx]->Intersects(camerabb)) {
-	//			m_pLightCamera[i]->SetPartition(bbIdx);
-	//			break;
-	//		}
-	//	}
-	//}
-
-	//scene->m_vPreRenderShader[PARTITION_SHADER].reset(PtShader.release());
-}
-
 
 void CPostProcessingShader::OnShadowPrepareRenderTarget(ID3D12GraphicsCommandList* pd3dCommandList,int nclearcount)
 {
@@ -1987,25 +1897,6 @@ void COutLineShader::AddGameObject(const shared_ptr<CGameObject>& pGameObject)
 		m_vGameObjects.push_back(pGameObject);
 	}
 }
-
-//D3D12_BLEND_DESC COutLineShader::CreateBlendState()
-//{
-//	D3D12_BLEND_DESC d3dBlendDesc;
-//	::ZeroMemory(&d3dBlendDesc, sizeof(D3D12_BLEND_DESC));
-//	d3dBlendDesc.AlphaToCoverageEnable = FALSE;
-//	d3dBlendDesc.IndependentBlendEnable = FALSE;
-//	d3dBlendDesc.RenderTarget[0].BlendEnable = true;
-//	d3dBlendDesc.RenderTarget[0].LogicOpEnable = false;
-//	d3dBlendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-//	d3dBlendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-//	d3dBlendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-//	d3dBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-//	d3dBlendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-//	d3dBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-//	d3dBlendDesc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
-//	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-//	return d3dBlendDesc;
-//}
 
 PartitionInsStandardShader::PartitionInsStandardShader()
 {

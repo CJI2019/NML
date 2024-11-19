@@ -249,7 +249,6 @@ public:
 
 	void TransitionShadowMapRenderTargetToCommon(ID3D12GraphicsCommandList* pd3dCommandList, int nTransition=0);
 
-	void CreateLightCamera(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,CMainScene* scene);
 	//vector<shared_ptr<CCamera>>& GetLightCamera() { return  m_pLightCamera; }
 
 public:

@@ -21,7 +21,6 @@
 #define BUBBLE_C 11
 #define FOOTPRINT 3
 
-
 struct MATERIAL
 {
     float4 m_cAmbient;

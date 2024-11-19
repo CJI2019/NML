@@ -55,7 +55,7 @@ public:
 	void AnimateEnding();
 	//void ProcessCollide();
 	void PreRenderTasks(shared_ptr<CMainScene>& pMainScene);
-	void FrameAdvance();
+	void FrameUpdate();
 	void LoadingRender();
 
 	void WaitForGpuComplete();

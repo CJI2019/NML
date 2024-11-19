@@ -15,18 +15,9 @@ public:
 
 	int m_nCntInstance = 1;
 
-	//void AddRef() { m_nReferences++; }
-	//void Release() { if (--m_nReferences <= 0) delete this; }
-
 	UINT GetType() { return(m_nType); }
-	//XMFLOAT3 GetAABBCenter()const { return m_xmf3AABBCenter; }
-	//XMFLOAT3 GetAABBExtents()const { return m_xmf3AABBExtents; }
 	BoundingOrientedBox GetOOBB(int nIndex) const { return m_vOOBBs[nIndex]; }
 	vector<BoundingOrientedBox> GetVectorOOBB() const { return m_vOOBBs; }
-
-	/*virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList) { }
-	virtual void ReleaseShaderVariables() { }*/
 
 	virtual void ReleaseUploadBuffers();
 
@@ -45,9 +36,6 @@ public:
 protected:
 	UINT m_nType = 0x00;
 
-	//XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//BoundingOrientedBox				m_OOBB{ BoundingOrientedBox() };
 	vector<BoundingOrientedBox>	m_vOOBBs;
 
 	D3D12_PRIMITIVE_TOPOLOGY m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -90,7 +78,6 @@ protected:
 	XMFLOAT2* m_pxmf2UV0 = nullptr;
 
 	ComPtr<ID3D12Resource>			m_pd3dUV0Buffer;
-	//ComPtr<ID3D12Resource>			m_pd3dUV0UploadBuffer;
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dUV0BufferView;
 };
 
@@ -178,7 +165,6 @@ public:
 
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 
-	// 여기서 하드코딩으로 충돌체에 따른 게임 오브젝트를 만드는 작업을 하게 해둠
 	void CreateInstanceObjectInfo(char* pstrMeshName, XMFLOAT4X4& xmf4x4WorldMatrix);
 
 	XMFLOAT4X4* GetInstanceTransformMatrix() { return m_pxmf4x4InstanceTransformMatrix; }
@@ -189,7 +175,6 @@ public:
 	void SetInstanceMatrixBufferView(D3D12_VERTEX_BUFFER_VIEW view) { m_d3dInstanceTransformMatrixBufferView = view; }
 	void SetOriginInstanceObject(const shared_ptr<CInstanceObject>& pGameObject) { m_pOriginInstance = pGameObject; }
 protected:
-	//XMFLOAT4X4						m_xmf4x4ToParent;
 	XMFLOAT4X4* m_pxmf4x4InstanceTransformMatrix = NULL;
 	weak_ptr<CInstanceObject> m_pOriginInstance;
 
